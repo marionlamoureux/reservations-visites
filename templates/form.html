@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block body %}
+  <h1>Demande de visite</h1>
+  <p>Merci de remplir ce formulaire pour organiser votre visite.</p>
+
+  {% if errors %}
+    <div class="error">
+      Merci de renseigner les champs obligatoires :
+      {{ errors | join(", ") }}.
+    </div>
+  {% endif %}
+
+  <form method="post" novalidate>
+    {% for col, label, type, required, options in fields %}
+      <label for="{{ col }}">
+        {{ label }}{% if required %} *{% endif %}
+      </label>
+      {% if type == "radio" %}
+        <div class="radio-group">
+          {% for opt in options %}
+            <label>
+              <input type="radio" name="{{ col }}" value="{{ opt }}"
+                {% if values.get(col) == opt %}checked{% endif %}
+                {% if required %}required{% endif %}>
+              {{ opt }}
+            </label>
+          {% endfor %}
+        </div>
+      {% else %}
+        <input type="{{ type }}" id="{{ col }}" name="{{ col }}"
+               value="{{ values.get(col, '') }}"
+               {% if type == "number" %}min="0"{% endif %}
+               {% if required %}required{% endif %}>
+      {% endif %}
+    {% endfor %}
+    <button type="submit">Envoyer la demande</button>
+  </form>
+{% endblock %}

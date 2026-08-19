@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Merci{% endblock %}
+{% block body %}
+  <h1>Merci !</h1>
+  <p>Votre demande de visite a bien été enregistrée. Nous vous recontacterons prochainement.</p>
+  <p><a href="{{ url_for('form') }}">← Envoyer une autre demande</a></p>
+{% endblock %}

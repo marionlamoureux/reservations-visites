@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Administration{% endblock %}
+{% block body %}
+  <div class="topbar">
+    <h1>Demandes reçues ({{ rows | length }})</h1>
+    <span>
+      <a href="{{ url_for('export_csv') }}">Exporter CSV</a> ·
+      <a href="{{ url_for('logout') }}">Déconnexion</a>
+    </span>
+  </div>
+
+  {% if rows %}
+    <div style="overflow-x:auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Reçu le</th>
+            {% for col, label, type, required, options in fields %}
+              <th>{{ label }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td>{{ row["id"] }}</td>
+              <td>{{ row["created_at"] }}</td>
+              {% for col, label, type, required, options in fields %}
+                <td>{{ row[col] }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <p>Aucune demande pour le moment.</p>
+  {% endif %}
+{% endblock %}

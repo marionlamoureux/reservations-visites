@@ -1,0 +1,9 @@
+# Secrets & data — never commit
+.env
+*.db
+submissions.db
+
+# Python
+.venv/
+__pycache__/
+*.pyc
