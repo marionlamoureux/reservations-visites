@@ -26,6 +26,13 @@
             </label>
           {% endfor %}
         </div>
+      {% elif type == "select" %}
+        <select id="{{ col }}" name="{{ col }}" {% if required %}required{% endif %}>
+          <option value="" disabled {% if not values.get(col) %}selected{% endif %}>-- Choisir --</option>
+          {% for opt in options %}
+            <option value="{{ opt }}" {% if values.get(col) == opt %}selected{% endif %}>{{ opt }}</option>
+          {% endfor %}
+        </select>
       {% else %}
         <input type="{{ type }}" id="{{ col }}" name="{{ col }}"
                value="{{ values.get(col, '') }}"

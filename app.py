@@ -32,10 +32,20 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 NOTIFY_EMAIL = os.environ.get("NOTIFY_EMAIL", "")
 FROM_EMAIL = os.environ.get("FROM_EMAIL", "onboarding@resend.dev")
 
+def half_hour_slots(start_hour, end_hour):
+    """Build ['08:00', '08:30', ..., '18:00'] between two hours (inclusive)."""
+    slots = []
+    for hour in range(start_hour, end_hour + 1):
+        slots.append(f"{hour:02d}:00")
+        if hour != end_hour:
+            slots.append(f"{hour:02d}:30")
+    return slots
+
+
 # Form field definitions: (db_column, label, input_type, required, options)
 FIELDS = [
     ("date_visite", "Date de la visite", "date", True, None),
-    ("heure_visite", "Heure de la visite", "time", True, None),
+    ("heure_visite", "Heure de la visite", "select", True, half_hour_slots(8, 18)),
     ("acces_toilettes", "Besoin d'un accès aux toilettes municipales", "radio", True, ["Oui", "Non"]),
     ("acces_preau", "Besoin d'accès au préau pour la pause méridienne", "radio", True, ["Oui", "Non"]),
     ("nombre_enfants", "Nombre d'enfants (environ)", "number", True, None),
