@@ -52,6 +52,7 @@ FIELDS = [
     ("nombre_vehicules", "Nombre de véhicules sur le parking", "number", False, None),
     ("nom_etablissement", "Nom de l'établissement", "text", True, None),
     ("niveau_scolaire", "Niveau scolaire", "text", False, None),
+    ("commentaires", "Commentaires / questions", "textarea", False, None),
 ]
 
 
@@ -81,6 +82,12 @@ def init_db():
         )
         """
     )
+    # Lightweight migration: add any columns introduced after the table was first
+    # created, so new FIELDS entries don't break inserts on an existing database.
+    existing = {row[1] for row in conn.execute("PRAGMA table_info(submissions)")}
+    for col, *_ in FIELDS:
+        if col not in existing:
+            conn.execute(f"ALTER TABLE submissions ADD COLUMN {col} TEXT")
     conn.commit()
     conn.close()
 

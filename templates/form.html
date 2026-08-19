@@ -26,6 +26,9 @@
             </label>
           {% endfor %}
         </div>
+      {% elif type == "textarea" %}
+        <textarea id="{{ col }}" name="{{ col }}" rows="4"
+                  {% if required %}required{% endif %}>{{ values.get(col, '') }}</textarea>
       {% elif type == "select" %}
         <select id="{{ col }}" name="{{ col }}" {% if required %}required{% endif %}>
           <option value="" disabled {% if not values.get(col) %}selected{% endif %}>-- Choisir --</option>
