@@ -30,9 +30,11 @@
     après votre passage.</p>
 
     <div id="map"></div>
-    <p class="map-caption">Plan de Malans&nbsp;: <strong>①</strong> entrée du parc
-    Ileart (entre les deux châteaux) et <strong>②</strong> ancienne école de Malans
-    (4 rue du Moulin — préau et toilettes municipales).</p>
+    <p class="map-caption">Plan de Malans&nbsp;: les <strong>deux entrées</strong> du
+    parc Ileart — <strong>①</strong> entre les deux châteaux et <strong>②</strong>
+    route de Pesmes (<strong>P</strong>&nbsp;: parking, juste derrière l'entrée route
+    de Pesmes)&nbsp;; <strong>③</strong> ancienne école de Malans (4 rue du Moulin —
+    préau et toilettes municipales).</p>
 
     <p>Pour découvrir le parc et préparer votre venue, rendez-vous sur
     <a href="https://www.ileart-sculptures.com" target="_blank" rel="noopener">ileart-sculptures.com</a>.
@@ -97,8 +99,10 @@
       var mapEl = document.getElementById("map");
       if (!mapEl || typeof L === "undefined") return;
 
-      var ileart = [47.26365, 5.58754];   // Entrée du parc (entre les deux châteaux)
-      var ecole  = [47.26347, 5.59367];   // Ancienne école — 4 rue du Moulin
+      var entreeChateaux = [47.26321, 5.58713];  // Entrée entre les deux châteaux (sud)
+      var entreePesmes   = [47.26695, 5.58690];  // Entrée route de Pesmes (nord)
+      var parking        = [47.26723, 5.58722];  // Parking, derrière l'entrée route de Pesmes
+      var ecole          = [47.26347, 5.59367];  // Ancienne école — 4 rue du Moulin
 
       var map = L.map("map", { scrollWheelZoom: false });
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -106,26 +110,30 @@
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
       }).addTo(map);
 
-      function numberedIcon(n, color) {
+      function badgeIcon(label, color) {
         return L.divIcon({
           className: "",
           html: '<div style="background:' + color + ';color:#fff;width:26px;height:26px;' +
                 'border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;' +
                 'align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.4);' +
                 'border:2px solid #fff;"><span style="transform:rotate(45deg);font-weight:700;' +
-                'font-size:14px;">' + n + "</span></div>",
+                'font-size:14px;">' + label + "</span></div>",
           iconSize: [26, 26],
           iconAnchor: [13, 26],
           popupAnchor: [0, -24]
         });
       }
 
-      L.marker(ileart, { icon: numberedIcon("1", "#2e7d32") }).addTo(map)
+      L.marker(entreeChateaux, { icon: badgeIcon("1", "#2e7d32") }).addTo(map)
         .bindPopup("<b>① Entrée du parc Ileart</b><br>Entre les deux châteaux");
-      L.marker(ecole, { icon: numberedIcon("2", "#c0392b") }).addTo(map)
-        .bindPopup("<b>② Ancienne école de Malans</b><br>4 rue du Moulin — préau &amp; toilettes municipales");
+      L.marker(entreePesmes, { icon: badgeIcon("2", "#2e7d32") }).addTo(map)
+        .bindPopup("<b>② Entrée du parc Ileart</b><br>Route de Pesmes");
+      L.marker(parking, { icon: badgeIcon("P", "#2c6fbb") }).addTo(map)
+        .bindPopup("<b>Parking</b><br>Juste derrière l'entrée route de Pesmes");
+      L.marker(ecole, { icon: badgeIcon("3", "#c0392b") }).addTo(map)
+        .bindPopup("<b>③ Ancienne école de Malans</b><br>4 rue du Moulin — préau &amp; toilettes municipales");
 
-      map.fitBounds(L.latLngBounds([ileart, ecole]).pad(0.55));
+      map.fitBounds(L.latLngBounds([entreeChateaux, entreePesmes, parking, ecole]).pad(0.35));
     })();
   </script>
 {% endblock %}
