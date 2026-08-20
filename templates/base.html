@@ -29,11 +29,18 @@
     th { background: #eef1ec; }
     .topbar { display: flex; justify-content: space-between; align-items: center; }
     a { color: var(--green); }
+    .intro p { line-height: 1.55; }
+    #map { height: 340px; width: 100%; border: 1px solid var(--border);
+           border-radius: 10px; margin: 1rem 0 .5rem; }
+    .map-caption { font-size: .85rem; color: #555; margin: 0 0 1.5rem; }
+    .leaflet-container { font: inherit; }
   </style>
+  {% block head %}{% endblock %}
 </head>
 <body>
   <div class="card">
     {% block body %}{% endblock %}
   </div>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

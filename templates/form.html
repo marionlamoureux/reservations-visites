@@ -1,7 +1,50 @@
 {% extends "base.html" %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='leaflet/leaflet.css') }}">
+{% endblock %}
+
 {% block body %}
-  <h1>Demande de visite</h1>
-  <p>Merci de remplir ce formulaire pour organiser votre visite.</p>
+  <div class="intro">
+    <h1>Bienvenue au parc de sculptures Ileart&nbsp;!</h1>
+
+    <p>Ileart invite les enseignants et leurs élèves à venir découvrir un parcours
+    de sculptures monumentales au cœur de la nature, à Malans (70140). Une belle
+    occasion de mêler art, découverte et grand air&nbsp;! Comptez environ
+    <strong>2 heures</strong> pour profiter de la visite complète.</p>
+
+    <p>Quelques informations pratiques avant de remplir votre demande&nbsp;:</p>
+
+    <p>Le parc et le parking sont en <strong>accès libre</strong>. Ce formulaire
+    s'adresse uniquement aux enseignants qui souhaitent pouvoir utiliser les
+    <strong>toilettes municipales</strong> et/ou le <strong>préau de l'ancienne
+    école de Malans</strong> pour pique-niquer avec leurs élèves. En effet, afin
+    de préserver le site, les pique-niques ne sont pas autorisés dans le parc
+    Ileart. Les toilettes publiques les plus proches sont celles de Pesmes&nbsp;;
+    les toilettes municipales de Malans sont réservées à un usage plus
+    exceptionnel pour les groupes scolaires. L'utilisation de ces espaces
+    municipaux de Malans est soumise à approbation&nbsp;: ils sont de petite
+    capacité et entretenus avec soin par l'équipe municipale.</p>
+
+    <p>Merci de votre compréhension et de votre attention à les laisser propres
+    après votre passage.</p>
+
+    <div id="map"></div>
+    <p class="map-caption">Plan de Malans&nbsp;: <strong>①</strong> entrée du parc
+    Ileart (entre les deux châteaux) et <strong>②</strong> ancienne école de Malans
+    (4 rue du Moulin — préau et toilettes municipales).</p>
+
+    <p>Pour découvrir le parc et préparer votre venue, rendez-vous sur
+    <a href="https://www.ileart-sculptures.com" target="_blank" rel="noopener">ileart-sculptures.com</a>.
+    Vous y trouverez également un <strong>dossier pédagogique</strong> au format PDF
+    pour accompagner votre visite&nbsp;:
+    <a href="https://www.ileart-sculptures.com/liens/" target="_blank" rel="noopener">ileart-sculptures.com/liens</a>.</p>
+
+    <p>Contact&nbsp;:
+    <a href="mailto:association@ileart-sculptures.com">association@ileart-sculptures.com</a></p>
+
+    <p>Nous vous souhaitons une très belle découverte d'Ileart avec vos élèves&nbsp;!</p>
+  </div>
 
   {% if errors %}
     <div class="error">
@@ -45,4 +88,44 @@
     {% endfor %}
     <button type="submit">Envoyer la demande</button>
   </form>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='leaflet/leaflet.js') }}"></script>
+  <script>
+    (function () {
+      var mapEl = document.getElementById("map");
+      if (!mapEl || typeof L === "undefined") return;
+
+      var ileart = [47.26365, 5.58754];   // Entrée du parc (entre les deux châteaux)
+      var ecole  = [47.26347, 5.59367];   // Ancienne école — 4 rue du Moulin
+
+      var map = L.map("map", { scrollWheelZoom: false });
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(map);
+
+      function numberedIcon(n, color) {
+        return L.divIcon({
+          className: "",
+          html: '<div style="background:' + color + ';color:#fff;width:26px;height:26px;' +
+                'border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;' +
+                'align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.4);' +
+                'border:2px solid #fff;"><span style="transform:rotate(45deg);font-weight:700;' +
+                'font-size:14px;">' + n + "</span></div>",
+          iconSize: [26, 26],
+          iconAnchor: [13, 26],
+          popupAnchor: [0, -24]
+        });
+      }
+
+      L.marker(ileart, { icon: numberedIcon("1", "#2e7d32") }).addTo(map)
+        .bindPopup("<b>① Entrée du parc Ileart</b><br>Entre les deux châteaux");
+      L.marker(ecole, { icon: numberedIcon("2", "#c0392b") }).addTo(map)
+        .bindPopup("<b>② Ancienne école de Malans</b><br>4 rue du Moulin — préau &amp; toilettes municipales");
+
+      map.fitBounds(L.latLngBounds([ileart, ecole]).pad(0.55));
+    })();
+  </script>
 {% endblock %}
