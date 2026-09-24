@@ -2,14 +2,14 @@
 
 Formulaire de demande de visite scolaire pour le parc de sculptures **Ileart**.
 Les enseignants remplissent un formulaire public pour organiser la visite de leur
-classe ; les demandes sont consultables dans une interface d'administration protégée
+classe qui declenche un email aux personnes concernées à la mairie; les demandes sont consultables dans une interface d'administration protégée
 par mot de passe, avec export CSV.
 
 Application en production : <https://visites.ileart-sculptures.com/>
 
 ## Fonctionnalités
 
-- **Formulaire public** (`/`) — 8 champs en français :
+- **Formulaire public** (`/`) — Champs en français :
   - Date et heure de la visite
   - Besoin d'un accès aux toilettes municipales (Oui/Non)
   - Besoin d'accès au préau pour la pause méridienne (Oui/Non)
@@ -17,6 +17,7 @@ Application en production : <https://visites.ileart-sculptures.com/>
   - Nombre de véhicules sur le parking
   - Nom de l'établissement
   - Niveau scolaire
+  - Nom, numero et email du responsable de la visite, présent sur place
 - **Notification e-mail** à chaque soumission, via l'API [Resend](https://resend.com).
 - **Administration** protégée par identifiant/mot de passe :
   - `/admin` — liste des demandes reçues
@@ -51,9 +52,15 @@ deploy/
   nginx.conf              # Configuration nginx (reverse proxy)
 ```
 
+## Infra
+Application et base de données déployées sur un droplet Digital Ocean.
+
+
 ## Configuration
 
-Copiez `.env.example` en `.env` et renseignez les valeurs :
+Commit github trigger le redeployement de l'application sur le droplet via un github Action
+Pour la configuration des emails:
+Sur le droplet copiez `.env.example` en `.env` et renseignez les valeurs :
 
 | Variable         | Rôle                                                        |
 |------------------|-------------------------------------------------------------|
@@ -66,32 +73,3 @@ Copiez `.env.example` en `.env` et renseignez les valeurs :
 | `DB_PATH`        | (optionnel) Chemin de la base SQLite                        |
 
 > Le fichier `.env` et la base `submissions.db` ne sont **jamais** versionnés
-> (voir `.gitignore`) : ils contiennent des secrets et des données personnelles.
-
-## Développement local
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env        # puis éditez .env
-python app.py               # http://localhost:8000
-```
-
-La table SQLite est créée automatiquement au démarrage (`init_db()`).
-
-## Déploiement
-
-```bash
-# 1. Sur votre machine (doctl authentifié, clé SSH ajoutée à DigitalOcean)
-export SSH_KEY_NAME="nom-de-votre-cle-dans-DO"
-./deploy/provision.sh       # crée le droplet, copie les fichiers, bootstrap
-
-# 2. Créez le .env sur le serveur, puis redémarrez
-scp .env root@<IP>:/opt/visitform/.env
-ssh root@<IP> 'systemctl restart visitform'
-```
-
-`bootstrap.sh` installe Python/nginx, crée le virtualenv, installe le service
-systemd et configure nginx. Le HTTPS (certbot) est ajouté séparément une fois le
-sous-domaine pointé vers le droplet.
