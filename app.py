@@ -52,6 +52,7 @@ FIELDS = [
     ("nombre_vehicules", "Nombre de véhicules sur le parking", "number", False, None),
     ("nom_etablissement", "Nom de l'établissement", "text", True, None),
     ("niveau_scolaire", "Niveau scolaire", "text", False, None),
+    ("nom_responsable", "Prénom et Nom du responsable présent lors de la visite", "text", True, None),
     ("email_responsable", "Email du responsable présent lors de la visite", "email", True, None),
     ("telephone_responsable", "Téléphone portable du responsable présent lors de la visite", "tel", True, None),
     ("commentaires", "Commentaires / questions", "textarea", False, None),

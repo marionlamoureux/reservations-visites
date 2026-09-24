@@ -1,0 +1,48 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Install SSH key
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.DO_SSH_PRIVATE_KEY }}
+
+      - name: Deploy app to droplet
+        env:
+          DO_HOST: ${{ secrets.DO_HOST }}
+          DO_USER: ${{ secrets.DO_USER }}
+          DO_TARGET_DIR: ${{ secrets.DO_TARGET_DIR }}
+          DO_PORT: ${{ secrets.DO_PORT != '' && secrets.DO_PORT || 22 }}
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H "$DO_HOST" >> ~/.ssh/known_hosts
+
+          rsync -avz --delete \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.venv/' \
+            --exclude '__pycache__/' \
+            --exclude '.env' \
+            --exclude 'submissions.db' \
+            -e "ssh -p $DO_PORT" \
+            ./ "$DO_USER@$DO_HOST:$DO_TARGET_DIR/"
+
+      - name: Restart the app service
+        env:
+          DO_HOST: ${{ secrets.DO_HOST }}
+          DO_USER: ${{ secrets.DO_USER }}
+          DO_TARGET_DIR: ${{ secrets.DO_TARGET_DIR }}
+          DO_PORT: ${{ secrets.DO_PORT != '' && secrets.DO_PORT || 22 }}
+        run: |
+          ssh -p "$DO_PORT" "$DO_USER@$DO_HOST" "bash -lc 'cd \"$DO_TARGET_DIR\" && if [ ! -d .venv ]; then python3 -m venv .venv; fi && .venv/bin/pip install -r requirements.txt && (sudo systemctl restart visitform || systemctl restart visitform)'"
