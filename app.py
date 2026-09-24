@@ -32,6 +32,15 @@ RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 NOTIFY_EMAIL = os.environ.get("NOTIFY_EMAIL", "")
 FROM_EMAIL = os.environ.get("FROM_EMAIL", "onboarding@resend.dev")
 
+
+def get_notify_recipients():
+    """Support either a single email or a comma/semicolon-separated list."""
+    raw = os.environ.get("NOTIFY_EMAIL", NOTIFY_EMAIL or "")
+    if not raw:
+        return []
+    return [email.strip() for email in raw.replace(";", ",").split(",") if email.strip()]
+
+
 def half_hour_slots(start_hour, end_hour):
     """Build ['08:00', '08:30', ..., '18:00'] between two hours (inclusive)."""
     slots = []
@@ -97,7 +106,8 @@ def init_db():
 
 def send_notification(data):
     """Send an email via Resend when a form is submitted. Best-effort."""
-    if not (RESEND_API_KEY and NOTIFY_EMAIL):
+    recipients = get_notify_recipients()
+    if not (RESEND_API_KEY and recipients):
         return
     lines = [f"<b>{label}:</b> {data.get(col, '') or '—'}" for col, label, *_ in FIELDS]
     html = "<h2>Nouvelle demande de visite</h2>" + "<br>".join(lines)
@@ -107,7 +117,7 @@ def send_notification(data):
             headers={"Authorization": f"Bearer {RESEND_API_KEY}"},
             json={
                 "from": FROM_EMAIL,
-                "to": [NOTIFY_EMAIL],
+                "to": recipients,
                 "subject": f"Nouvelle demande de visite — {data.get('nom_etablissement', '')}",
                 "html": html,
             },
