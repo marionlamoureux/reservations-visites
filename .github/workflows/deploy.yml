@@ -39,6 +39,8 @@ jobs:
             -e "ssh -p $DO_PORT" \
             ./ "$DO_USER@$DO_HOST:$DO_TARGET_DIR/"
 
+          ssh -p "$DO_PORT" "$DO_USER@$DO_HOST" "bash -lc 'chown -R www-data:www-data \"$DO_TARGET_DIR\" && chmod -R u+rwX \"$DO_TARGET_DIR\" && chmod 664 \"$DO_TARGET_DIR/submissions.db\" 2>/dev/null || true'"
+
       - name: Restart the app service
         env:
           DO_HOST: ${{ secrets.DO_HOST }}
